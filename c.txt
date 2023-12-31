@@ -1,0 +1,270 @@
+app.js
+
+//add libraries
+const express=require("express");
+const app=express();
+const bodyparser=require("body-parser");
+const path=require("path");
+
+//add all url handling routes
+const routes= require("./routes/router");
+
+//configure the application
+app.set("views",path.join(__dirname,"views"))
+app.set("view engine","ejs")
+
+//add middleware
+app.use(bodyparser.urlencoded({extended:false}));
+
+//pass the control to router for handling url
+app.use("/",routes);
+
+//start the server
+app.listen(9000,function(){
+    console.log("server started at port 9000")
+})
+
+module.exports=app;
+
+package
+{
+  "name": "nodecurd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "sony",
+  "license": "ISC",
+  "dependencies":{
+    "express":"^4.18.2",
+    "body-parser": "^1.20.2",
+    "mysql": "2.18.1",
+    "nodemon": "3.0.2",
+    "ejs": "^3.1.5"
+  }
+}
+
+views
+
+Views
+
+edit-book.ejs
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table</title>
+</head>
+<body>
+    <header>
+        <h1>Book Management</h1>
+    </header>
+    <div>
+        <form action="/addbook">
+            <button type="submit" id="add" name="add">Add Book</button>
+        </form>
+        <br/>
+        <table border="2">
+            <tr>
+                <th>Book Id</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Prices</th>
+                <th>Delete</th>
+                <th>Edit</th>
+            </tr>
+            <% for(var i=0;i<bookarr.length;i++){%>
+                <tr>
+                    <td><%=bookarr[i].bid%></td>
+                    <td><%=bookarr[i].title%></td>
+                    <td><%=bookarr[i].author%></td>
+                    <td><%=bookarr[i].price%></td>
+                    <td><a href="/deletebook/<%=bookarr[i].bid%>">Delete</a></td>
+                    <td><a href="/editbook/<%=bookarr[i].bid%>">Edit</a></td>
+                </tr>
+            <%}%>
+        </table>
+    </div>
+</body>
+</html>
+
+table.ejs
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table</title>
+</head>
+<body>
+    <header>
+        <h1>Book Management</h1>
+    </header>
+    <div>
+        <form action="/addbook">
+            <button type="submit" id="add" name="add">Add Book</button>
+        </form>
+        <br/>
+        <table border="2">
+            <tr>
+                <th>Book Id</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Prices</th>
+                <th>Delete</th>
+                <th>Edit</th>
+            </tr>
+            <% for(var i=0;i<bookarr.length;i++){%>
+                <tr>
+                    <td><%=bookarr[i].bid%></td>
+                    <td><%=bookarr[i].title%></td>
+                    <td><%=bookarr[i].author%></td>
+                    <td><%=bookarr[i].price%></td>
+                    <td><a href="/deletebook/<%=bookarr[i].bid%>">Delete</a></td>
+                    <td><a href="/editbook/<%=bookarr[i].bid%>">Edit</a></td>
+                </tr>
+            <%}%>
+        </table>
+    </div>
+</body>
+</html>
+
+
+add-book.ejs
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form</title>
+</head>
+<body>
+    <div>
+        <form action="/insertbook" method="post">
+            <table>
+                <tr>
+                    <td>BOOK ID:</td>&nbsp;
+                    <td>
+                        <input type="number" id="bid" name="bid"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>BOOK TITLE:</td>&nbsp;
+                    <td>
+                        <input type="text" id="title" name="title"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>BOOK AUTHOR:</td>&nbsp;
+                    <td>
+                        <input type="text" id="author" name="author"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>BOOK PRICE:</td>&nbsp;
+                    <td>
+                        <input type="number" id="price" name="price"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="submit" id="btn" name="btn">Submit</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>
+
+dbutils
+const mysql=require("mysql");
+
+var mysqlconnection=mysql.createConnection({
+    host:'127.0.0.1',
+    user:"root",
+    password:"1234",
+    database:"test",
+    port:3306
+});
+
+mysqlconnection.connect((err)=>{
+    if(!err){
+        console.log("database connected succefully")
+    }else{
+        console.log("internal server error")
+    }
+});
+
+module.exports=mysqlconnection;
+
+
+router
+const express=require("express");
+var myrouter=express.Router();
+
+var connection=require("../db/dbutils")
+
+myrouter.get("/books",function(req,resp){
+    connection.query("select * from book",(err,data,fields)=>{
+        if(err){
+            resp.status(500).send("server error");
+        }
+        else{
+            resp.render("table",{bookarr:data})
+        }
+    })
+});
+
+myrouter.get("/addbook",function(req,resp){
+    resp.render("add-book")
+});
+
+myrouter.post("/insertbook",function(req,resp){
+    connection.query("insert into book values(?,?,?,?)",[req.body.bid,req.body.title,req.body.author,req.body.price],(err,data)=>{
+        if(err){
+            resp.status(500).send("server error");
+        }
+        else{
+            resp.redirect("/books")
+        }
+    })
+});
+
+myrouter.get("/deletebook/:bid",function(req,resp){
+    connection.query("delete from book where bid=?",[req.params.bid],(err,data)=>{
+        if(err){
+            resp.status(500).send("server error");
+        }
+        else{
+            resp.redirect("/books")
+        }
+    })
+});
+
+myrouter.get("/editbook/:bid",function(req,resp){
+    connection.query("select * from book where bid=?",[req.params.bid],(err,data)=>{
+        if(err){
+            resp.status(500).send("server error");
+        }
+        else{
+            resp.render("edit-book",{book:data[0]})
+        }
+    })
+})
+
+myrouter.get("/updatebook/:bid",function(req,resp){
+    connection.query("update book set title=?, author=?, price=? where bid=?",[req.body.title,req.body.author,req.body.price,req.body.bid],(err)=>{
+        if(err){
+            resp.status(500).send("server error");
+        }
+        else{
+            resp.redirect("/books")
+        }
+    })
+});
+
+module.exports=myrouter;
