@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu-Driven Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;}
+
+        input, button, span {
+            font-size: 16px;
+            margin: 5px;
+            padding: 8px;}
+
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 50%;
+            margin-left: auto;
+            margin-right: auto;}
+
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Menu-Driven Calculator</h1>
+
+    <label for="num1">Enter Number 1:</label>
+    <input type="number" id="num1" placeholder="Enter a number">
+
+    <label for="num2">Enter Number 2:</label>
+    <input type="number" id="num2" placeholder="Enter another number">
+
+    <button onclick="performOperation()">Perform Operation</button>
+
+    <p>Result: <span id="result"></span></p>
+
+    <div id="table-container"></div>
+
+    <script>
+        function performOperation() {
+            var num1 = parseFloat(document.getElementById("num1").value);
+            var num2 = parseFloat(document.getElementById("num2").value);
+
+            var operation = prompt("Choose an operation:\n1. Add\n2. Subtract\n3. Multiply\n4. Divide\n5. Display Table\n6. Factorial\n7. Power\n8. Sum of Digits");
+
+            switch (operation) {
+                case "1":
+                    displayResult(num1 + num2);
+                    break;
+                case "2":
+                    displayResult(num1 - num2);
+                    break;
+                case "3":
+                    displayResult(num1 * num2);
+                    break;
+                case "4":
+                    if (num2 !== 0) {
+                        displayResult(num1 / num2);
+                    } else {
+                        displayResult("Cannot divide by zero");
+                    }
+                    break;
+                case "5":
+                    displayTable(num1);
+                    break;
+                case "6":
+                    displayResult(factorial(num1));
+                    break;
+                case "7":
+                    displayResult(power(num1, num2));
+                    break;
+                case "8":
+                    displayResult(sumOfDigits(num1));
+                    break;
+                default:
+                    displayResult("Invalid operation");
+                    break;
+            }
+        }
+
+        function displayResult(result) {
+            document.getElementById("result").innerHTML = result;
+            document.getElementById("table-container").innerHTML = ""; // Clear table container
+        }
+
+        function displayTable(number) {
+            var tableContainer = document.getElementById("table-container");
+
+            // Create a table element
+            var table = document.createElement("table");
+
+            // Create table header
+            var headerRow = table.insertRow(0);
+            var headerCell = headerRow.insertCell(0);
+            headerCell.innerHTML = "<b>Number</b>";
+
+            // Create table row with the number and its multiples
+            for (var i = 1; i <= 10; i++) {
+                var row = table.insertRow(i);
+                var cell = row.insertCell(0);
+                cell.innerHTML = number + " x " + i + " = " + (number * i);
+            }
+
+            // Append the table to the container
+            tableContainer.innerHTML = "";
+            tableContainer.appendChild(table);
+        }
+
+        function factorial(n) {
+            if (n === 0 || n === 1) {
+                return 1;
+            } else {
+                return n * factorial(n - 1);
+            }
+        }
+
+        function power(base, exponent) {
+            return Math.pow(base, exponent);
+        }
+
+        function sumOfDigits(number) {
+            var sum = 0;
+            var numString = number.toString();
+
+            for (var i = 0; i < numString.length; i++) {
+                sum += parseInt(numString[i]);
+            }
+
+            return sum;
+        }
+    </script>
+
+</body>
+</html>
