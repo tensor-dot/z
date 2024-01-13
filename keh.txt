@@ -1,0 +1,246 @@
+script.js
+function handleRegistration() {
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const birthdate = document.getElementById('birthdate').value;
+    const joiningDate = document.getElementById('joiningDate').value;
+    const genderOptions = document.getElementsByName('gender');
+    let selectedGender = '';
+
+    // Username validation
+    if (username.trim() === '') {
+        alert('Username cannot be blank');
+        return false;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert('Invalid email format');
+        return false;
+    }
+
+    // Password validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+    if (!passwordRegex.test(password)) {
+        alert('Password must contain at least one uppercase letter, one lowercase letter, and be at least 6 characters long');
+        return false;
+    }
+
+    // Confirm Password validation
+    if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return false;
+    }
+
+    // Birthdate validation
+    const selectedDate = new Date(birthdate);
+    const minBirthdate = new Date('01-01-2012'); 
+    
+    if (selectedDate >= minBirthdate) {
+        alert('Invalid birthdate');
+        return false;
+    }
+
+
+        // Joining Date validation
+    const minJoiningDate = new Date();
+    minJoiningDate.setDate(minJoiningDate.getDate() - 30);
+    
+    const selectedJoiningDate = new Date(joiningDate);
+    
+    if (!(selectedJoiningDate >= minJoiningDate && selectedJoiningDate <= new Date())) {
+        alert('Invalid joining date. It should be within the last 30 days.');
+        return false;
+    }
+
+
+    // Gender validation
+    for (const genderOption of genderOptions) {
+        if (genderOption.checked) {
+            selectedGender = genderOption.value;
+            break;
+        }
+    }
+
+    if (selectedGender === '') {
+        alert('Please select a gender');
+        return false;
+    }
+    
+    const subjectsOptions = document.getElementsByName('subjects');
+    let selectedSubjects = [];
+
+    for (const subjectsOption of subjectsOptions) {
+        if (subjectsOption.checked) {
+            selectedSubjects.push(subjectsOption.value);
+        }
+    }
+
+    if (selectedSubjects.length === 0) {
+        alert('Please select at least one subject');
+        return false;
+    }
+
+    // If all validations pass, you can perform further actions or submit the form
+    alert('Registration successful!');
+    // If all validations pass, store the data in URL parameters and redirect
+    const queryParams = `?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&birthdate=${encodeURIComponent(birthdate)}&joiningDate=${encodeURIComponent(joiningDate)}&gender=${encodeURIComponent(selectedGender)}&subjects=${encodeURIComponent(selectedSubjects.join(','))}`;
+
+    // Example: Navigate to a new page with URL parameters
+    window.location.href = `success.html${queryParams}`;
+}
+
+
+index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Registration Form</title>
+</head>
+<body>
+
+    <div class="container">
+        <form id="registrationForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required></br>
+        
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required></br>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required></br>
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required></br>
+
+            <label for="birthdate">Birthdate:</label>
+            <input type="date" id="birthdate" name="birthdate" required></br>
+
+            <label for="joiningDate">Joining Date:</label>
+            <input type="date" id="joiningDate" name="joiningDate" required></br>
+
+            <label>Gender:</label>
+            <div class="gender-options">
+                <input type="radio" id="male" name="gender" value="male" required>
+                <label for="male">Male</label>
+
+                <input type="radio" id="female" name="gender" value="female" required>
+                <label for="female">Female</label>
+
+                <input type="radio" id="other" name="gender" value="other" required>
+                <label for="other">Other</label>
+            </div>
+            
+
+            <label>Subjects:</label>
+            <div class="subject-options">
+                <input type="checkbox" id="physics" name="subjects" value="physics">
+                <label for="physics">Physics</label>
+
+                <input type="checkbox" id="chemistry" name="subjects" value="chemistry">
+                <label for="chemistry">Chemistry</label>
+
+                <input type="checkbox" id="science" name="subjects" value="science">
+                <label for="science">Science</label>
+            </div>
+
+          <input type="button" value="Register" class="full-width" onclick="handleRegistration()">
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+success.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Success</title>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Registration Successful!</h1>
+
+        <div id="userInfo">
+            <!-- Display user information here -->
+        </div>
+    </div>
+
+    <script src="nextpage.js"></script>
+</body>
+</html>
+
+
+style.css
+body {
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: 70%;
+    margin: auto;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+label {
+    font-weight: bold;
+}
+
+.gender-options,
+.subject-options {
+    display: flex;
+    gap: 10px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+nextpage.js
+// Retrieve URL parameters and display user information
+document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const userInfoContainer = document.getElementById('userInfo');
+
+    if (urlParams.has('username')) {
+        userInfoContainer.innerHTML += `<p><strong>Username:</strong> ${urlParams.get('username')}</p>`;
+    }
+
+    if (urlParams.has('email')) {
+        userInfoContainer.innerHTML += `<p><strong>Email:</strong> ${urlParams.get('email')}</p>`;
+    }
+
+    if (urlParams.has('birthdate')) {
+        userInfoContainer.innerHTML += `<p><strong>Birthdate:</strong> ${urlParams.get('birthdate')}</p>`;
+    }
+
+    if (urlParams.has('joiningDate')) {
+        userInfoContainer.innerHTML += `<p><strong>Joining Date:</strong> ${urlParams.get('joiningDate')}</p>`;
+    }
+
+    if (urlParams.has('gender')) {
+        userInfoContainer.innerHTML += `<p><strong>Gender:</strong> ${urlParams.get('gender')}</p>`;
+    }
+
+    if (urlParams.has('subjects')) {
+        const subjects = urlParams.get('subjects').split(',');
+        userInfoContainer.innerHTML += `<p><strong>Subjects:</strong> ${subjects.join(', ')}</p>`;
+    }
+});
